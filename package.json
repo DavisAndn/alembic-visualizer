@@ -1,0 +1,38 @@
+{
+  "name": "alembic-viz",
+  "displayName": "Alembic Migration Visualizer",
+  "description": "Visualize Alembic migration DAG as an interactive Mermaid graph",
+  "version": "0.1.0",
+  "publisher": "local",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/local/alembic-viz"
+  },
+  "engines": {
+    "vscode": "^1.85.0"
+  },
+  "categories": [
+    "Visualization"
+  ],
+  "activationEvents": [],
+  "main": "./out/extension.js",
+  "contributes": {
+    "commands": [
+      {
+        "command": "alembic-viz.showGraph",
+        "title": "Alembic: Show Migration Graph"
+      }
+    ]
+  },
+  "scripts": {
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./",
+    "package": "npx @vscode/vsce package --skip-license"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "@types/vscode": "^1.85.0",
+    "@vscode/vsce": "^2.32.0",
+    "typescript": "^5.3.0"
+  }
+}
