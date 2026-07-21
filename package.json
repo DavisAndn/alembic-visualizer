@@ -3,11 +3,16 @@
   "displayName": "Alembic Visualizer",
   "description": "Visualize your Alembic migration history as an interactive DAG, with project auto-discovery and click-to-open.",
   "version": "0.2.0",
-  "publisher": "local",
+  "publisher": "clusome",
+  "icon": "images/icon.png",
   "repository": {
     "type": "git",
-    "url": "https://github.com/local/alembic-viz"
+    "url": "https://github.com/DavisAndn/alembic-visualizer"
   },
+  "bugs": {
+    "url": "https://github.com/DavisAndn/alembic-visualizer/issues"
+  },
+  "homepage": "https://github.com/DavisAndn/alembic-visualizer#readme",
   "engines": {
     "vscode": "^1.85.0"
   },
