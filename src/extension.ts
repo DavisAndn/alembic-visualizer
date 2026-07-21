@@ -29,7 +29,7 @@ export function activate(context: vscode.ExtensionContext) {
           "alembicGraph",
           "Alembic Migration Graph",
           vscode.ViewColumn.One,
-          { enableScripts: true, retainContextWhenHidden: true }
+          { enableScripts: true, retainContextWhenHidden: true },
         );
         currentPanel.onDidDispose(() => {
           currentPanel = undefined;
@@ -51,21 +51,21 @@ export function activate(context: vscode.ExtensionContext) {
               const filePath = payload.files[msg.revisionId];
               if (filePath) {
                 const doc = await vscode.workspace.openTextDocument(
-                  vscode.Uri.file(filePath)
+                  vscode.Uri.file(filePath),
                 );
                 await vscode.window.showTextDocument(
                   doc,
-                  vscode.ViewColumn.Beside
+                  vscode.ViewColumn.Beside,
                 );
               } else {
                 vscode.window.showWarningMessage(
-                  `No file found for revision ${msg.revisionId}`
+                  `No file found for revision ${msg.revisionId}`,
                 );
               }
             }
           },
           undefined,
-          context.subscriptions
+          context.subscriptions,
         );
       } catch (err: unknown) {
         const message = err instanceof Error ? err.message : String(err);
@@ -73,7 +73,7 @@ export function activate(context: vscode.ExtensionContext) {
           currentPanel.webview.html = getErrorHtml(message);
         }
       }
-    }
+    },
   );
 
   context.subscriptions.push(disposable);
@@ -83,13 +83,13 @@ export function deactivate() {}
 
 async function runMermaidGenerator(
   context: vscode.ExtensionContext,
-  cwd: string
+  cwd: string,
 ): Promise<MermaidPayload> {
   const pythonPath = detectPython(cwd);
   const scriptPath = path.join(
     context.extensionPath,
     "scripts",
-    "mermaid_generator.py"
+    "mermaid_generator.py",
   );
 
   return new Promise((resolve, reject) => {
@@ -101,8 +101,8 @@ async function runMermaidGenerator(
         if (err) {
           reject(
             new Error(
-              `Python script failed (${pythonPath}):\n${stderr || err.message}`
-            )
+              `Python script failed (${pythonPath}):\n${stderr || err.message}`,
+            ),
           );
           return;
         }
@@ -111,29 +111,38 @@ async function runMermaidGenerator(
         } catch {
           reject(new Error(`Invalid JSON from generator:\n${stdout}`));
         }
-      }
+      },
     );
   });
 }
 
 function detectPython(cwd: string): string {
-  const venvDirs = [".venv", "venv"];
-
-  // Scan for any venv* directory pattern (e.g. venv3.11.9)
+  // 1. Resolve .python-version (pyenv) — this is the most reliable indicator
+  //    of the user's intended environment since shell init (pyenv shell) doesn't
+  //    run when we spawn a child process via execFile.
   try {
-    const entries = fs.readdirSync(cwd);
-    for (const entry of entries) {
-      if (entry.startsWith("venv")) {
-        const candidate = path.join(cwd, entry, "bin", "python");
-        if (fs.existsSync(candidate)) {
-          return candidate;
-        }
+    const pvFile = path.join(cwd, ".python-version");
+    if (fs.existsSync(pvFile)) {
+      const pyenvVersion = fs.readFileSync(pvFile, "utf-8").trim();
+      const homeDir = process.env.HOME || process.env.USERPROFILE || "";
+      const pyenvCandidate = path.join(
+        homeDir,
+        ".pyenv",
+        "versions",
+        pyenvVersion,
+        "bin",
+        "python",
+      );
+      if (fs.existsSync(pyenvCandidate)) {
+        return pyenvCandidate;
       }
     }
   } catch {
     // fall through
   }
 
+  // 2. Check common venv directories
+  const venvDirs = [".venv", "venv"];
   for (const dir of venvDirs) {
     const candidate = path.join(cwd, dir, "bin", "python");
     if (fs.existsSync(candidate)) {
@@ -141,6 +150,7 @@ function detectPython(cwd: string): string {
     }
   }
 
+  // 3. VS Code / Cursor Python extension interpreter
   const configPython = vscode.workspace
     .getConfiguration("python")
     .get<string>("defaultInterpreterPath");
