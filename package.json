@@ -1,8 +1,8 @@
 {
   "name": "alembic-viz",
-  "displayName": "Alembic Migration Visualizer",
-  "description": "Visualize Alembic migration DAG as an interactive Mermaid graph",
-  "version": "0.1.0",
+  "displayName": "Alembic Visualizer",
+  "description": "Visualize your Alembic migration history as an interactive DAG, with project auto-discovery and click-to-open.",
+  "version": "0.2.0",
   "publisher": "local",
   "repository": {
     "type": "git",
@@ -14,25 +14,71 @@
   "categories": [
     "Visualization"
   ],
+  "keywords": [
+    "alembic",
+    "migration",
+    "sqlalchemy",
+    "database",
+    "dag"
+  ],
   "activationEvents": [],
   "main": "./out/extension.js",
   "contributes": {
     "commands": [
       {
         "command": "alembic-viz.showGraph",
-        "title": "Alembic: Show Migration Graph"
+        "title": "Show Migration Graph",
+        "category": "Alembic Visualizer"
+      },
+      {
+        "command": "alembic-viz.switchDirectory",
+        "title": "Switch Project Directory",
+        "category": "Alembic Visualizer"
       }
-    ]
+    ],
+    "configuration": {
+      "title": "Alembic Visualizer",
+      "properties": {
+        "alembicViz.alembicIniPath": {
+          "type": "string",
+          "default": "",
+          "scope": "resource",
+          "markdownDescription": "Path to the `alembic.ini` to visualize, relative to the workspace folder (an absolute path is also accepted). Leave empty to auto-detect. Change it with the **Alembic Visualizer: Switch Project Directory** command."
+        },
+        "alembicViz.recursiveVersionLocations": {
+          "type": "boolean",
+          "default": true,
+          "markdownDescription": "Pass `recursive_version_locations = true` to Alembic so migration files in sub-folders of `versions/` are discovered (requires Alembic ≥ 1.10)."
+        },
+        "alembicViz.search.maxResults": {
+          "type": "number",
+          "default": 50,
+          "minimum": 1,
+          "description": "Maximum number of alembic.ini files to list when auto-discovering projects in the workspace."
+        }
+      }
+    }
   },
   "scripts": {
+    "clean": "node -e \"require('fs').rmSync('out',{recursive:true,force:true})\"",
+    "build:webview": "esbuild media-src/mermaid-entry.mjs --bundle --format=esm --minify --legal-comments=none --outfile=media/mermaid.esm.min.mjs",
     "compile": "tsc -p ./",
     "watch": "tsc -watch -p ./",
+    "typecheck": "tsc -p tsconfig.test.json --noEmit",
+    "test": "npm run typecheck && mocha",
+    "prepare": "npm run build:webview",
+    "vscode:prepublish": "npm run clean && npm run build:webview && npm run compile",
     "package": "npx @vscode/vsce package --skip-license"
   },
   "devDependencies": {
+    "@types/mocha": "^10.0.10",
     "@types/node": "^20.0.0",
     "@types/vscode": "^1.85.0",
     "@vscode/vsce": "^2.32.0",
+    "esbuild": "^0.24.2",
+    "mermaid": "^11.16.0",
+    "mocha": "^11.1.0",
+    "ts-node": "^10.9.2",
     "typescript": "^5.3.0"
   }
 }
