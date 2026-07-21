@@ -1,4 +1,10 @@
 node_modules/
 out/
+out-test/
 *.vsix
 .vscode-test/
+__pycache__/
+*.pyc
+
+# Generated webview asset (built by `npm run build:webview` / prepare / vscode:prepublish)
+media/mermaid.esm.min.mjs

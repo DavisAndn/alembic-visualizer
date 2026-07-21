@@ -1,5 +1,21 @@
-src/**
-node_modules/**
+# Everything not listed here ships in the .vsix. Keep out/, scripts/*.py,
+# media/mermaid.esm.min.mjs, package.json, README.md, CHANGELOG.md, LICENSE.
+
 .vscode/**
-tsconfig.json
+.vscode-test/**
+.github/**
+src/**
+test/**
+media-src/**
+node_modules/**
+**/*.ts
+**/*.map
+**/tsconfig*.json
+.mocharc.js
+.editorconfig
+.gitignore
+.python-version
+**/__pycache__/**
+**/*.pyc
 *.vsix
+out-test/**
