@@ -8,3 +8,6 @@ __pycache__/
 
 # Generated webview asset (built by `npm run build:webview` / prepare / vscode:prepublish)
 media/mermaid.esm.min.mjs
+
+# Local release runbook (personal notes)
+publish.md
